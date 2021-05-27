@@ -1,0 +1,46 @@
+import speech_recognition as sr
+import pyaudio
+import pyttsx3
+
+
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+
+from chatterbot import ChatBot
+bot=ChatBot("chinnu")
+
+
+from chatterbot.trainers import ChatterBotCorpusTrainer
+bot.set_trainer(ChatterBotCorpusTrainer)
+
+
+bot.train('chatterbot.corpus.english')
+listener=sr.Recognizer()
+
+print(sr._version_)
+print(sr.Microphone.list_microphone_names())
+while (True):
+   try:
+    with sr.Microphone(device_index=1) as source:
+        print(" you can speak now ")
+        voice=listener.listen(source)
+        command=listener.recognize_google(voice)
+        print (command)
+        if(command.upper()=='BYE'):
+            reply='  Bye Bye ,Take care!'
+            print(reply)
+            talk(reply)#ending
+            break
+        else:
+           reply=bot.get_response(command)#replies
+           print(reply)
+           talk(reply)
+   except :
+    print("error")
